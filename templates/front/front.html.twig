@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+       
+    </style>
+{% endblock %}
+
+{% block body %}
+<section id="mainSection" style="padding-top:56px;">
+    
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="col-md-12 col infoBox">
+                    <div class="col">
+                        <h1>Bienvenido a {{sitename}}</h1>
+                    </div>
+                    <div class="col-12">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        $(document).ready(function(){
+
+        });
+    </script>
+{% endblock %}

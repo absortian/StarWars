@@ -1,0 +1,32 @@
+#DATERANGE
+daterange.accept: Aceptar
+daterange.cancel: Cancelar
+daterange.from: Desde
+daterange.to: a
+daterange.customRange: Rango personalizado
+daterange.lun: Lun
+daterange.mar: Mar
+daterange.mie: Mie
+daterange.jue: Jue
+daterange.vie: Vie
+daterange.sab: Sab
+daterange.dom: Dom
+daterange.enero: Enero
+daterange.febrero: Febrero
+daterange.marzo: Marzo
+daterange.abril: Abril
+daterange.mayo: Mayo
+daterange.junio: Junio
+daterange.julio: Julio
+daterange.agosto: Agosto
+daterange.septiembre: Septiembre
+daterange.octubre: Octubre
+daterange.noviembre: Noviembre
+daterange.diciembre: Diciembre
+daterange.hoy: Hoy
+daterange.ayer: Ayer
+daterange.last7: Últimos 7 días
+daterange.mes: Este mes
+daterange.mesOld: Mes anterior
+daterange.year: Este año
+daterange.yearOld: Año anterior
