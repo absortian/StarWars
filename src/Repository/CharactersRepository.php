@@ -18,33 +18,20 @@ class CharactersRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Characters::class);
     }
-
-    // /**
-    //  * @return Characters[] Returns an array of Characters objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+    
+    public function findCharacters($search){
+        if($search){
+            return $this->createQueryBuilder('c')
+                ->andWhere('c.name LIKE :search')
+                ->setParameter('search', '%'.$search.'%')
+                ->getQuery()
+                ->getResult(2)
+            ;
+        }else{
+            return $this->createQueryBuilder('c')
+                ->getQuery()
+                ->getResult(2)
+            ;
+        }
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Characters
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

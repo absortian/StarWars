@@ -3,7 +3,11 @@
 {% block stylesheets %}
     {{parent()}}
     <style>
-       
+       body{background-color: grey;}
+       .btn{
+           margin-left: 10px;
+           margin-right: 10px;
+       }
     </style>
 {% endblock %}
 
@@ -14,11 +18,16 @@
         <div class="row">
             <div class="col">
                 <div class="col-md-12 col infoBox">
-                    <div class="col">
-                        <h1>Bienvenido a {{sitename}}</h1>
-                    </div>
                     <div class="col-12">
-                    
+                        <input style="width: 100%;" type="text" id="searchInput" placeholder="Search...">
+                    </div>
+                </div>
+                <div id="results" class="col-md-12 col">
+                    <div id="searchDiv" style="display: flex;align-items:center;justify-content:center;margin-top:20px;">
+                        <i class="fa fa-sync-alt fa-spin fa-4x"></i>
+                    </div>
+                    <div id="characters" class="col-12" style="display: none;">
+
                     </div>
                 </div>
             </div>
@@ -30,8 +39,174 @@
 {% block javascripts %}
     {{parent()}}
     <script>
+        function loadCharacters(){
+            $("#characters").css("display","none");
+            $("#searchDiv").css("display","flex");
+            $.ajax({
+                url: "{{url('search_characters')}}",
+                type: "POST",
+                dataType: 'json',
+                data: {
+                    "search": $("#searchInput").val()
+                },
+                success: function(result){
+                    if(result.status && result.data){
+                        $("#characters").html("");
+                        result.data.forEach(function(value){
+                            var html = '';
+                            html += '<div data-id="'+value.id+'" class="characterData col-12 row infoBox">';
+                                html += '<div class="col-6 col" style="padding-top:20px;">';
+                                    html += '<p style="text-align:center;">Name: <input type="text" name="name" value="'+value.name+'"></p>';
+                                    html += '<p style="text-align:center;">Gender: <input type="text" name="gender" value="'+value.gender+'"></p>';
+                                    html += '<p style="text-align:center;">Mass: <input type="number" name="mass" value="'+value.mass+'"></p>';
+                                    html += '<p style="text-align:center;">Height: <input type="number" name="height" value="'+value.height+'"></p>';
+                                html += '</div>';
+                                html += '<div class="col-6 col">';
+                                    if(value.picture){
+                                        html += '<img style="border:1px solid white;height:200px;width:200px;" src="'+value.picture+'"/>';
+                                    }else{
+                                        html += '<div style="border:1px solid white;height:200px;width:200px;">No pic</div>';
+                                    }
+                                    html += '<input style="margin-top:10px;" type="file" name="picture">';
+                                html += '</div>';
+                                html += '<div class="col-12 col">';
+                                    html += '<div data-id="'+value.id+'" class="col-2 btn btn-success btnSave"><i class="fa fa-save"></i> Save</div>';
+                                    html += '<div data-id="'+value.id+'" class="col-2 btn btn-danger btnDelete"><i class="fa fa-trash"></i> Delete</div>';
+                                html += '</div>';
+                            html += '</div>';
+                            $("#characters").append(html);
+                        });
+                        $("#characters").css("display","");
+                        $("#searchDiv").css("display","none");
+                        $(".btnDelete").unbind("click");
+                        $(".btnDelete").click(function(){
+                            var auxId = $(this).attr("data-id");
+                            Swal.fire({
+                                title: '¿Sure?',
+                                text: "",
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes!',
+                                cancelButtonText: 'NO'
+                            }).then((result) => {
+                                if (result.value) {
+                                    $.ajax({
+                                        url: "{{url('delete_characters')}}",
+                                        type: "POST",
+                                        dataType: 'json',
+                                        data: {id:auxId},
+                                        success: function(result){
+                                            if(result.status){
+                                                Swal.fire(
+                                                    'Done!',
+                                                    '',
+                                                    'success'
+                                                );
+                                                loadCharacters();
+                                            }else{
+                                                Swal.fire(
+                                                    'Error',
+                                                    '',
+                                                    'error'
+                                                );
+                                            }
+                                        },
+                                        beforeSend: function(){
+                                            Swal.fire(
+                                                'Espere',
+                                            );
+                                            Swal.showLoading();
+                                        },
+                                    });
+                                }
+                            });
+                        });
+                        $(".btnSave").unbind("click");
+                        $(".btnSave").click(function(){
+                            var auxId = $(this).attr("data-id");
+                            var auxName = $(this).parent().parent().find("[name='name']").val();
+                            var auxGender = $(this).parent().parent().find("[name='gender']").val();
+                            var auxMass = $(this).parent().parent().find("[name='mass']").val();
+                            var auxHeight = $(this).parent().parent().find("[name='height']").val();
+                            var file = $(this).parent().parent().find("input:file").prop('files')[0];
+                            Swal.fire({
+                                title: '¿Sure?',
+                                text: "",
+                                type: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes!',
+                                cancelButtonText: 'NO'
+                            }).then((result) => {
+                                if (result.value) {
+                                    var dataAux = {
+                                        id: auxId,
+                                        name: auxName,
+                                        gender: auxGender,
+                                        mass: auxMass,
+                                        height: auxHeight,
+                                        file: file
+                                    };
+                                    var fd = new FormData();
+                                    for(const indexAux in dataAux){
+                                        fd.append(indexAux,dataAux[indexAux]);
+                                    }
+                                    $.ajax({
+                                        url: "{{url('save_character')}}",
+                                        type: "POST",
+                                        dataType: 'json',
+                                        contentType: false,
+                                        processData: false,
+                                        data: fd,
+                                        success: function(result){
+                                            if(result.status){
+                                                Swal.fire(
+                                                    'Done!',
+                                                    '',
+                                                    'success'
+                                                );
+                                                loadCharacters();
+                                            }else{
+                                                Swal.fire(
+                                                    'Error',
+                                                    '',
+                                                    'error'
+                                                );
+                                            }
+                                        },
+                                        beforeSend: function(){
+                                            Swal.fire(
+                                                'Espere',
+                                            );
+                                            Swal.showLoading();
+                                        },
+                                    });
+                                }
+                            });
+                        });
+                    }else{
+                        Swal.fire(
+                            'Algo fue mal',
+                            result.message,
+                            'error'
+                        );
+                    }
+                }
+            });
+        }
+        var timeout = null;
         $(document).ready(function(){
-
+            loadCharacters();
+            $("#searchInput").unbind("keyup");
+            $("#searchInput").keyup(function(){
+                clearTimeout(timeout);
+                timeout = setTimeout(function(){
+                    loadCharacters();
+                },500);
+            });
         });
     </script>
 {% endblock %}
