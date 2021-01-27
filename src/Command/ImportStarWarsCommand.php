@@ -1,17 +1,17 @@
 <?php
 namespace App\Command;
 
+use App\Service\APIService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use App\Service\PrestashopConnectorService;
-use PDO;
 
 class ImportStarWarsCommand extends Command{
 
-    public function __construct()
+    public function __construct(APIService $APIService)
     {
         parent::__construct();
+        $this->APIService = $APIService;
     }
 
     protected function configure(){
@@ -24,8 +24,9 @@ class ImportStarWarsCommand extends Command{
 
 		$output->writeln('Iniciando importación.');
 
+        $this->APIService->importAllMovies();
         
-        $output->writeln('Fin test.');		
+        $output->writeln('Fin importación.');		
 
     }
 
